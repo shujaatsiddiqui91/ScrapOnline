@@ -12,6 +12,14 @@ namespace WebApi2.Models
 {
     public partial class ScrapOnlineContext : IdentityDbContext<ApplicationUser, IdentityRole<long>, long, IdentityUserClaim<long>, IdentityUserRole<long>, IdentityUserLogin<long>, IdentityRoleClaim<long>, IdentityUserToken<long>>
     {
+        public ScrapOnlineContext()
+        {
+        }
+
+        public ScrapOnlineContext(DbContextOptions<ScrapOnlineContext> options)
+            : base(options)
+        {
+        }
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -27,6 +35,37 @@ namespace WebApi2.Models
             builder.Entity<IdentityUserLogin<long>>().ToTable("UserLogin", "master");
             builder.Entity<IdentityUserRole<long>>().ToTable("UserRole", "master");
             builder.Entity<IdentityUserToken<long>>().ToTable("UserToken", "master");
+            builder.Entity<Clientorders>(entity =>
+           {
+               entity.ToTable("clientorders", "master");
+
+               entity.Property(e => e.Id).HasColumnName("id");
+
+               entity.Property(e => e.Createdate)
+                   .HasColumnName("createdate")
+                   .HasColumnType("date");
+
+               entity.Property(e => e.Orderid).HasColumnName("orderid");
+
+               entity.Property(e => e.Userid).HasColumnName("userid");
+
+               entity.HasOne(d => d.User)
+                   .WithMany(p => p.Clientorders)
+                   .HasForeignKey(d => d.Userid)
+                   .HasConstraintName("clientorders_userid_fkey");
+           });
+            builder.Entity<ScrapCategories>(entity =>
+                        {
+                            entity.ToTable("ScrapCategories", "master");
+
+                            entity.Property(e => e.Id)
+                                .HasColumnName("id")
+                                .ValueGeneratedNever();
+
+                            entity.Property(e => e.CategoryName).IsRequired();
+
+                            entity.Property(e => e.Unit).IsRequired();
+                        });
 
             builder.Entity<ScrapCategories>(entity =>
                 {

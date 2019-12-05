@@ -36,7 +36,8 @@ namespace WebApi2.Controllers
 
                 var authClaims = new List<Claim>
                 {
-                    new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Name, user.UserName),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email)
                 };
@@ -82,7 +83,8 @@ namespace WebApi2.Controllers
                 {
                     Email = model.Email ,
                     SecurityStamp = Guid.NewGuid().ToString(),
-                    UserName = model.Username  
+                    UserName = model.Username,
+                    Id = Guid.NewGuid().GetHashCode()
                 };
                 IdentityResult result =  await userManager.CreateAsync(user, model.Password);
                 if(result.Succeeded)
