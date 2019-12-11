@@ -20,7 +20,7 @@ namespace WebApi2.Controllers
     {
         private UserManager<ApplicationUser> _userManager;
         private readonly ILogger<ScrapManagerController> _logger;
-        private readonly ScrapOnlineContext _dbContext;
+        private ScrapOnlineContext _dbContext;
         public ScrapManagerController(UserManager<ApplicationUser> userManager, ILogger<ScrapManagerController> logger, ScrapOnlineContext dbContext)
         {
             _logger = logger;
@@ -36,11 +36,12 @@ namespace WebApi2.Controllers
         }
 
         [HttpPost]
-//[Authorize(Policy = "RequireCustomerRole")]
-        public void Create(OrderDetailsDTO obj)
+        [Authorize(Policy = "RequireCustomerRole")]
+        public async Task Create(OrderDetailsDTO obj)
         {
-            //var user = await _userManager.GetUserAsync(HttpContext.User);
-            Clientorders coObj = new Clientorders() { Orderid = "1234567", Status = 1, Userid = 11, Createdate = DateTime.Now };
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            _dbContext = new ScrapOnlineContext();
+            Clientorders coObj = new Clientorders() { Orderid =  new Random().Next(500,1000).ToString() + new Random().Next(1,500).ToString(), Status = 1, Userid = user.Id, Createdate = DateTime.Now };
             _dbContext.Clientorders.Add(coObj);
             if (coObj != null)
             {
@@ -62,10 +63,11 @@ namespace WebApi2.Controllers
         [Authorize(Policy = "RequireCustomerRole")]
         public async Task<Object> GetOrdersList()
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            return _dbContext.Clientorders.Include(x => x.OrderDetails).
-                    Where(x => x.User == user).
-                    Select(x => x).ToList();
+            return null;
+            // var user = await _userManager.GetUserAsync(HttpContext.User);
+            // return _dbContext.Clientorders.Include(x => x.OrderDetails).
+            //         Where(x => x.User == user).
+            //         Select(x => x).ToList();
             // if (query != null)
             // {
             //     obj.orderid = int.Parse(query.First().Orderid);
@@ -77,7 +79,7 @@ namespace WebApi2.Controllers
 
             //     }
 
-            // }
+            //}
         }
     }
 }

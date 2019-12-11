@@ -9,6 +9,11 @@ namespace WebApi2.Data
 {
     public class ApplicationUser : IdentityUser<long>
     {
+
+        public ApplicationUser()
+        {
+             Clientorders = new HashSet<Clientorders>();
+        }
         public virtual ICollection<Clientorders> Clientorders { get; set; }
     }
 }

@@ -9,5 +9,7 @@ namespace WebApi2.Models
         public int? Categoryid { get; set; }
         public int? Quantity { get; set; }
         public string OrderId { get; set; }
+
+        public virtual ScrapCategories Category { get; set; }
     }
 }

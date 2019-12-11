@@ -19,6 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using WebApi2.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace WebApi2
 {
@@ -69,6 +70,8 @@ namespace WebApi2
                 options.AddPolicy("RequireCustomerRole", policy => policy.RequireRole("Customer"));
                 options.AddPolicy("RequireVendorRole", policy => policy.RequireRole("Vendor"));
             });
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>(); 
         }
 
 
