@@ -36,21 +36,48 @@ namespace WebApi2.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy="RequireCustomerRole")]
-        public async void Create(List<Clientorders> obj)
+//[Authorize(Policy = "RequireCustomerRole")]
+        public void Create(OrderDetailsDTO obj)
         {
-            var user = await _userManager.GetUserAsync(HttpContext.User);
-            obj.ForEach(x=>x.User = user);
-            _dbContext.Clientorders.AddRange(obj);
-            _dbContext.SaveChanges();            
+            //var user = await _userManager.GetUserAsync(HttpContext.User);
+            Clientorders coObj = new Clientorders() { Orderid = "1234567", Status = 1, Userid = 11, Createdate = DateTime.Now };
+            _dbContext.Clientorders.Add(coObj);
+            if (coObj != null)
+            {
+                foreach (var item in obj.orderDetails)
+                {
+                    OrderDetails d = new OrderDetails();
+                    d.Categoryid = item.categoryid;
+                    d.OrderId = coObj.Orderid;
+                    d.Quantity = item.quantity;
+                    _dbContext.OrderDetails.Add(d);
+                }
+                _dbContext.SaveChanges();
+            }
+            else
+                _dbContext.Dispose();
         }
 
         [HttpGet]
-        [Authorize(Policy="RequireCustomerRole")]
-        public async Task<List<Clientorders>> GetOrdersList()
+        [Authorize(Policy = "RequireCustomerRole")]
+        public async Task<Object> GetOrdersList()
         {
-            var user =  await _userManager.GetUserAsync(HttpContext.User);
-            return _dbContext.Clientorders.Where(x=>x.User == user).Select(x=>x).ToList();
+            var user = await _userManager.GetUserAsync(HttpContext.User);
+            return _dbContext.Clientorders.Include(x => x.OrderDetails).
+                    Where(x => x.User == user).
+                    Select(x => x).ToList();
+            // if (query != null)
+            // {
+            //     obj.orderid = int.Parse(query.First().Orderid);
+            //     obj.createdate = Convert.ToDateTime(query.First().Createdate);
+            //     foreach (var item in query.First().OrderDetails)
+            //     {
+            //         OrderDetail detailObj = new OrderDetail();
+            //         detailObj.categoryid = 
+
+            //     }
+
+            // }
         }
     }
 }
